@@ -1,0 +1,25 @@
+version: '3'
+services:
+  notebook:
+    image: notetaker
+    env_file:
+      - .env
+    ports:
+      - 8998:8998
+    working_dir: /app
+    volumes:
+      -  ./src:/app
+  backend:
+    image: notetaker
+    env_file:
+      - .env
+    ports:
+      - 8501:8501
+    working_dir: /app
+    volumes:
+      -  ./src:/app
+    entrypoint: ''
+    command: ["streamlit", "run", "app.py", "--server.runOnSave=true", "--browser.gatherUsageStats=false"]
+
+
+
