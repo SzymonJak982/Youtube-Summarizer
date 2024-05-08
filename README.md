@@ -22,7 +22,7 @@ Before you begin, ensure you have the following:
 1. **Clone the Repository**
    ```bash
    git clone https://github.com/SzymonJak982/Youtube-Summarizer.git 
-   cd Youtube-Summarizer```
+   cd Youtube-Summarizer
 
 2. **Install dependencies**
   ```bash
@@ -39,10 +39,10 @@ Before you begin, ensure you have the following:
 1. **Clone the Repository**
    ```bash
    git clone https://github.com/SzymonJak982/Youtube-Summarizer.git 
-   cd Youtube-Summarizer```
+   cd Youtube-Summarizer
 
 2. **Build and start the service**
    ```bash
    docker-compose up --build
-```
+
 
