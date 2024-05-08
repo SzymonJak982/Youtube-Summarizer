@@ -57,3 +57,11 @@ Before you begin, ensure you have the following:
    ```bash
    docker-compose up --build
    ```
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and submit pull requests, or open an issue to suggest features or report bugs.
+
+## Licence
+
+MIT License
