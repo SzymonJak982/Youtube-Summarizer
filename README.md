@@ -23,16 +23,17 @@ Before you begin, ensure you have the following:
    ```bash
    git clone https://github.com/SzymonJak982/Youtube-Summarizer.git 
    cd Youtube-Summarizer
+   ```
 
 2. **Install dependencies**
   ```bash
   pip install -r requirements.txt
-
+  ```
 
 3. **Run the App**
   ```bash
   streamlit run app.py
- 
+ ```
 
 ### Using Docker
 
@@ -40,9 +41,9 @@ Before you begin, ensure you have the following:
    ```bash
    git clone https://github.com/SzymonJak982/Youtube-Summarizer.git 
    cd Youtube-Summarizer
+   ```
 
 2. **Build and start the service**
    ```bash
    docker-compose up --build
-
-
+   ```
