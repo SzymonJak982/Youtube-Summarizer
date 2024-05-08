@@ -1,5 +1,8 @@
 # Youtube-Summarizer App
 
+<img src="https://github.com/SzymonJak982/Youtube-Summarizer/blob/main/logo.png?raw=true" alt="Project Logo" width="200" height="200" title="Project Logo">
+
+
 The YouTube Summarizer App provides detailed, college-like notes for YouTube videos. It's ideal for students, researchers, or anyone looking to extract concise, informative summaries from educational videos. The app runs locally using Streamlit and is equipped with Docker support for easy deployment.
 
 ## Features
@@ -20,17 +23,21 @@ Before you begin, ensure you have the following:
 ### Without Docker
 
 1. **Clone the Repository**
+   
    ```bash
-   git clone https://github.com/SzymonJak982/Youtube-Summarizer.git 
+   git clone https://github.com/SzymonJak982/Youtube-Summarizer.git
+   
    cd Youtube-Summarizer
    ```
 
-2. **Install dependencies**
+3. **Install dependencies**
+   
   ```bash
   pip install -r requirements.txt
   ```
 
 3. **Run the App**
+   
   ```bash
   streamlit run app.py
  ```
@@ -38,12 +45,15 @@ Before you begin, ensure you have the following:
 ### Using Docker
 
 1. **Clone the Repository**
+   
    ```bash
-   git clone https://github.com/SzymonJak982/Youtube-Summarizer.git 
+   git clone https://github.com/SzymonJak982/Youtube-Summarizer.git
+   
    cd Youtube-Summarizer
    ```
 
-2. **Build and start the service**
+3. **Build and start the service**
+   
    ```bash
    docker-compose up --build
    ```
