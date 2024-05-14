@@ -9,7 +9,7 @@ The YouTube Summarizer App provides detailed, college-like notes for YouTube vid
 
 - **Video Summarization**: Converts YouTube transcript into detailed text notes using GPT model.
 - **Streamlit Interface**: User-friendly web interface for easy operation.
-- **Docker Integration**: Supports Docker for straightforward setup and scalability.
+- **Docker Integration**: Supports Docker for straightforward setup.
 
 ## Latest updates
 *14.05.2024:*
