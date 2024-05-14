@@ -11,6 +11,9 @@ The YouTube Summarizer App provides detailed, college-like notes for YouTube vid
 - **Streamlit Interface**: User-friendly web interface for easy operation.
 - **Docker Integration**: Supports Docker for straightforward setup and scalability.
 
+## Latest updates
+*14.05:*
+- *Summary history: Summarizer can now also store created summaries in the current browser session*
 ## Prerequisites
 
 Before you begin, ensure you have the following:
