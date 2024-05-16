@@ -67,4 +67,4 @@ Contributions are welcome! Please fork the repository and submit pull requests, 
 
 ## Licence
 
-MIT License
+Apache-2.0 License
