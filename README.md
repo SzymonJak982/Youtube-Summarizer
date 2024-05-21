@@ -13,8 +13,8 @@ The YouTube Summarizer App provides detailed, college-like notes for YouTube vid
 
 ## Latest updates
 *14.05.2024:*
-- *Summary history: Summarizer can now also store created summaries in the current browser session* <br/>
-*Currently working on setting up a Whisper model locally to enhance transcript generation*
+- *Summary history: Summarizer can now also store created summaries in the current browser session*
+- *Currently working on setting up a Whisper model locally to enhance transcript generation*
 
 ## Prerequisites
 
