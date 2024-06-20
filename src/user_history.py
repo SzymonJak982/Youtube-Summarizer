@@ -1,6 +1,9 @@
 import streamlit as st
 import time
 
+#TODO: Placeholder below. Initiaite local db to store the history on disk instead of in streamlit state.
+
+
 def history():
     return st.session_state["history"]
 
@@ -17,9 +20,9 @@ def session_history(answer, video_name, video_url):
     entry_exists = any(vid_name == entry[0] for vid_name, format_time, ans, url in st.session_state['history'])
     if not entry_exists:
         st.session_state["history"].append(entry)
-        st.session_state["history_change"] = True
-    else:
-        st.session_state["history_change"] = False
+    #     st.session_state["history_change"] = True
+    # else:
+    #     st.session_state["history_change"] = False
 
 
 
