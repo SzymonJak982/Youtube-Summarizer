@@ -1,51 +1,91 @@
+import pytube
 from pytube import YouTube
 from youtube_transcript_api import YouTubeTranscriptApi
 import re
 import time
 
-def get_youtube_title(url):
-    youtube = YouTube(url)
-    return youtube.title
 
+class YoutubeApi:
+    def __init__(self, video_url):
+        self.video_url = video_url
+        self.video_id = None
+        self.warning = None
 
-def fetch_transcript(video_url):
-    def url_to_id(url):
+    @staticmethod
+    def get_youtube_title(url):
+        youtube = YouTube(url)
+        return youtube.title
+
+    def url_to_id(self):
         try:
-            return url.split('v=')[1][:11]
-        except Exception as e:
-            warning = "Couldn't parse given url"
-            return None, warning
+            # parsing for url-s with session identifier
+            pattern = r'\?si'
+            url = self.video_url
 
-    video_id = url_to_id(url=video_url)
-
-    if isinstance(video_id, tuple):
-        # TODO Optimise these 2 error messages
-        warning = "Something went wrong upon validating your URL (1)"
-        return None, warning
-
-    pattern = r'[a-zA-Z0-9_-]{11}'
-    match = re.match(pattern, video_id)
-    if not match:
-        warning = "Something went wrong upon validating your URL (2)"
-        return None, warning
-
-    max_retries = 3
-    counter = 0
-
-    while True:
-        try:
-            raw_transcript = YouTubeTranscriptApi.get_transcript(video_id)
-            text_transcript = [i["text"] for i in raw_transcript]
-            transcript = " ".join(text_transcript)
-            return transcript, None
-        except:
-            # TODO: handle state info and log to streamlit
-            print("Error fetching transcript. Retrying...")
-            counter += 1
-            if counter <= max_retries:
-                time.sleep(2)
+            if re.search(pattern, url):
+                video_id = self.video_url.split('https://youtu.be/')[1][:11]
             else:
-                warning = "Sorry, I couldn't fetch transcript for this video 😔"
-                return None, warning
+                video_id = self.video_url.split('v=')[1][:11]
+            self.video_id = video_id
+            return True
+
+        except Exception as e:
+            self.warning = "Couldn't parse given url"
+            return False
+
+    def video_id_validation(self):
+
+        pattern = r'[a-zA-Z0-9_-]{11}'
+        if not re.match(pattern, self.video_id):
+            self.warning = 'Something went wrong when validating your URL'
+            return False
+
+        return True
+
+    def fetch_transcript(self):
+
+        if not self.url_to_id():
+            return False
+
+        if self.video_id_validation():
+
+            max_retries = 3
+            counter = 0
+
+            while True:
+                try:
+                    raw_transcript = YouTubeTranscriptApi.get_transcript(self.video_id)
+                    text_transcript = [i["text"] for i in raw_transcript]
+                    transcript = " ".join(text_transcript)
+                    return transcript
+                except:
+                    # TODO: handle state info and log to streamlit
+                    print("Error fetching transcript. Retrying...")
+                    counter += 1
+                    if counter <= max_retries:
+                        time.sleep(2)
+                    else:
+                        self.warning = "Sorry, I couldn't fetch transcript for this video 😔"
+                        return False
+        else:
+            return False
+
+    @staticmethod
+    def download_audio(video_url, output_path="../tmp/audio_stream.mp4"):
+        start_time = time.time()
+
+        yt = pytube.YouTube(video_url)
+        audio_stream = yt.streams.filter(only_audio=True).first()
+        audio_stream.download(filename=output_path)
+
+        end_time = time.time()
+        process_duration = end_time - start_time
+        print(f"Process took {process_duration} seconds")
+
+
+
+
+
+
 
 

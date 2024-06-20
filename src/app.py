@@ -1,12 +1,14 @@
 import streamlit as st
-import time
-import query_logic
-import youtube_logic
+# import time
+# import query_logic
+# import youtube_logic
+from youtube_logic import YoutubeApi
+from query_logic import Summarizer
 import user_history
 
 
 st.title('Youtube Summarizer')
-st.write("""This is an experimental project of YouTube summarizer, creating notes from youtube videos.""" )
+st.write("""This is an experimental project of YouTube summarizer, creating notes from youtube videos.""")
 
 disclaimer = st.info("Note: In the current version, summarization is unavailable for videos with disabled subtitles.")
 # TODO: for the v2 - figure out a way to get a transcript using whisper if transcript is unavailable
@@ -29,7 +31,7 @@ with tab1:
             placeholder="Example: sk-XXX"
 
             )
-        # TODO: Optimise this dummy function
+        #TODO: Optimise this dummy function
         def all_submitted():
             st.session_state.message = "All submitted"
 
@@ -48,32 +50,25 @@ with tab1:
 
         with st.spinner("Loading...📝"):
 
-            yt_api_answer, warning = youtube_logic.fetch_transcript(youtube_url)
+            youtube = YoutubeApi(youtube_url)
+            transcript = youtube.fetch_transcript()
 
-            if yt_api_answer:
-                transcript = yt_api_answer
-                # TODO: when waiting, log status of the process from backend
-                video_title = youtube_logic.get_youtube_title(youtube_url)
+            if transcript:
+                video_title = youtube.get_youtube_title(youtube_url)
                 st.header(video_title)
-                video_embed = st.video(youtube_url)
-                # TODO implement class
-                summarization, warning = query_logic.ai_summarization(transcript, openai_api_key)
+                st.video(youtube_url)
+                summarizer = Summarizer(openai_api_key)
+                summarization = summarizer.paragraph_summarize_query(transcript)
+                user_history.session_history(summarization, video_title, youtube_url)
 
                 if summarization:
-                    final_answer = summarization
                     st.markdown(summarization)
                     st.success("Done!")
                     st.balloons()
-
-                    user_history.session_history(final_answer, video_title, youtube_url)
-
-                elif summarization is None:
-                    final_answer = warning
-                    st.info(warning)
-
-            elif yt_api_answer is None:
-                transcript = warning
-                st.info(warning)
+                else:
+                    st.info(summarizer.warning)
+            else:
+                st.info(youtube.warning)
 
     else:
         st.stop()
