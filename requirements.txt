@@ -7,3 +7,7 @@ pytube
 youtube-transcript-api
 python-dotenv
 streamlit
+pydub
+openai-whisper
+pytest
+pytest-mock

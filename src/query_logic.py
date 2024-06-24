@@ -2,6 +2,8 @@ from openai import OpenAI
 import os
 import time
 import textwrap
+from openai._exceptions import AuthenticationError, InternalServerError
+from typing import Optional, Union
 
 
 class Summarizer:
@@ -10,7 +12,8 @@ class Summarizer:
         self.config = config
         self.warning = None
 
-    def gpt_query(self, request):
+    def gpt_query(self, request) -> Optional[Union[str, bool]]:
+        #TODO: Add output-type declaration and menage empty/non empty responses (isinstance+len) tather than str+ bool
 
         os.environ['OPENAI_API_KEY'] = self.config
         client = OpenAI()
@@ -31,23 +34,27 @@ class Summarizer:
                 )
                 return response.choices[0].message.content
 
-            except Exception:
+            except AuthenticationError as e:
+                self.warning = f"OpenAI could not validate your API key: {e.message}"
+                return False
+
+            except (InternalServerError, Exception) as e:
                 counter += 1
                 if counter <= max_retries:
                     time.sleep(1)
                 else:
-                    self.warning = "Sorry, there was a problem with connecting to OpenAI API"
+                    self.warning = f"Sorry, there was a problem with connecting to OpenAI API:{e}"
                     return False
 
     @staticmethod
     def chunker(text, chunk_length):
         return textwrap.wrap(text, chunk_length)
 
-    def paragraph_summarize_query(self, transcript):
+    def paragraph_summarize_query(self, transcript, gpt_prompt) -> Optional[Union[str, bool]]:
         chunks = Summarizer.chunker(text=transcript, chunk_length=8000)
 
-        with open('gpt_prompt', 'r') as prompt:
-            gpt_prompt_template = prompt.read()
+        with open(gpt_prompt, 'r') as p:
+            gpt_prompt_template = p.read()
 
         result = []
         count = 0

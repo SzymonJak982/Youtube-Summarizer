@@ -1,7 +1,4 @@
 import streamlit as st
-# import time
-# import query_logic
-# import youtube_logic
 from youtube_logic import YoutubeApi
 from query_logic import Summarizer
 import user_history
@@ -20,7 +17,7 @@ with tab1:
         logo = st.image("../logo.png", caption="Friendly Summarizer, always with a helping hand!",
                         )
         youtube_url = st.text_area(
-            label="Please provide YouTube video URL- example: https://www.youtube.com/watch?v=U9mJuUkhUzk ",
+            label="Please provide YouTube video URL:",
             max_chars=100
         )
 
@@ -58,7 +55,7 @@ with tab1:
                 st.header(video_title)
                 st.video(youtube_url)
                 summarizer = Summarizer(openai_api_key)
-                summarization = summarizer.paragraph_summarize_query(transcript)
+                summarization = summarizer.paragraph_summarize_query(transcript, 'gpt_prompt')
                 user_history.session_history(summarization, video_title, youtube_url)
 
                 if summarization:

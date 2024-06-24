@@ -13,12 +13,17 @@ class YoutubeApi:
 
     @staticmethod
     def get_youtube_title(url):
-        youtube = YouTube(url)
-        return youtube.title
+        try:
+            youtube = YouTube(url)
+            return youtube.title
+        except:
+            print("Unable to connect to Youtube API")
+            return None
 
     def url_to_id(self):
         try:
             # parsing for url-s with session identifier
+            #TODO: Handle youtube shortlinks also
             pattern = r'\?si'
             url = self.video_url
 
@@ -34,7 +39,7 @@ class YoutubeApi:
             return False
 
     def video_id_validation(self):
-
+        """Extra validation: checking for any non-specific chars in vid_id"""
         pattern = r'[a-zA-Z0-9_-]{11}'
         if not re.match(pattern, self.video_id):
             self.warning = 'Something went wrong when validating your URL'
@@ -72,16 +77,21 @@ class YoutubeApi:
 
     @staticmethod
     def download_audio(video_url, output_path="../tmp/audio_stream.mp4"):
-        start_time = time.time()
+        try:
+            start_time = time.time()
 
-        yt = pytube.YouTube(video_url)
-        audio_stream = yt.streams.filter(only_audio=True).first()
-        audio_stream.download(filename=output_path)
+            yt = pytube.YouTube(video_url)
+            audio_stream = yt.streams.filter(only_audio=True).first()
+            audio_stream.download(filename=output_path)
 
-        end_time = time.time()
-        process_duration = end_time - start_time
-        print(f"Process took {process_duration} seconds")
+            end_time = time.time()
+            process_duration = end_time - start_time
+            # print(f"Download took {process_duration} seconds")
+            return True
 
+        except:
+            print("Unable to connect to Youtube API")
+            return False
 
 
 
