@@ -12,9 +12,14 @@ The YouTube Summarizer App provides detailed, college-like notes for YouTube vid
 - **Docker Integration**: Supports Docker for straightforward setup.
 
 ## Latest updates
-*14.05.2024:*
+*25.06.2024:*
 - *Summary history: Summarizer can now also store created summaries in the current browser session*
 - *Currently working on setting up a Whisper model locally to enhance transcript generation*
+### Current development:
+   - enhancing transcript generation functionality using Whisper
+   - recreating backend using FastAPI; also streamlit ux optimisation
+   - preserving generated summaries using local db model 
+   - generation time optimisation using async logic for API calls and Tenacity 
 
 ## Prerequisites
 
