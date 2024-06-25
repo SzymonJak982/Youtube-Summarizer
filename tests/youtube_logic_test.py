@@ -2,15 +2,15 @@ import pytest
 from unittest.mock import patch, MagicMock
 from src.youtube_logic import YoutubeApi
 
-# Defining a fixture for a VALID YoutubeApi instance
 @pytest.fixture
 def valid_youtube_api():
+    """Sets up Summarizer instance with valid youtube URL"""
     return YoutubeApi("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
 
-# Defining a fixture for an INVALID YoutubeApi instance
 @pytest.fixture
 def invalid_youtube_api():
+    """Sets up Summarizer instance with invalid youtube URL"""
     return YoutubeApi("invalid_url_string")
 
 

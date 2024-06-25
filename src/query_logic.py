@@ -42,12 +42,13 @@ class Summarizer:
                 counter += 1
                 if counter <= max_retries:
                     time.sleep(1)
+                    self.warning = e
                 else:
                     self.warning = f"Sorry, there was a problem with connecting to OpenAI API:{e}"
                     return False
 
     @staticmethod
-    def chunker(text, chunk_length):
+    def chunker(text, chunk_length) -> Optional[list]:
         return textwrap.wrap(text, chunk_length)
 
     def paragraph_summarize_query(self, transcript, gpt_prompt) -> Optional[Union[str, bool]]:
