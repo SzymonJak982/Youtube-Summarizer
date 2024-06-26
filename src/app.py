@@ -56,6 +56,7 @@ with tab1:
                 st.video(youtube_url)
                 summarizer = Summarizer(openai_api_key)
                 summarization = summarizer.paragraph_summarize_query(transcript, 'gpt_prompt')
+                # TODO: Here put logic call to endpoint.
                 user_history.session_history(summarization, video_title, youtube_url)
 
                 if summarization:
