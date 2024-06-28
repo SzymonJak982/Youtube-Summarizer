@@ -1,16 +1,50 @@
+import sqlalchemy.exc
 import streamlit as st
 from youtube_logic import YoutubeApi
 from query_logic import Summarizer
-import user_history
+from user_history import History
+import ast
+import logging
 
+logging.basicConfig(level=logging.INFO)
 
 st.title('Youtube Summarizer')
 st.write("""This is an experimental project of YouTube summarizer, creating notes from youtube videos.""")
 
-disclaimer = st.info("Note: In the current version, summarization is unavailable for videos with disabled subtitles.")
-# TODO: for the v2 - figure out a way to get a transcript using whisper if transcript is unavailable
+disclaimer = st.info("Note: In this version, summarization is available almost exclusively for english-language videos")
+
+
+def history_display():
+    # history_as_list = user_history.history()
+    try:
+        history = History()
+        history_as_list = history.serialize_history()
+        # vid_name, format_time, ans, url
+        for record in reversed(ast.literal_eval(history_as_list)):
+            # title
+            with st.expander(record["video_title"]):
+                st.write(record["timestamp"])
+                # st.video(record["video_url"])
+                st.markdown(record["summary"])
+
+    except Exception as e:
+        logging.info(e)
+        # Handling empty database for new user
+        return None
+
+
+@st.cache_data
+def summarization_wrapper(output):
+    """Small util wrapper"""
+    return output
+
 
 tab1, tab2 = st.tabs(["Summarizer", "Your summaries"])
+
+
+with tab2:
+    st.info("Note: In the current version your summaries are stored locally as .db file in this project.")
+    history_display()
 
 with tab1:
     with st.sidebar.form(key='my_form'):
@@ -55,9 +89,14 @@ with tab1:
                 st.header(video_title)
                 st.video(youtube_url)
                 summarizer = Summarizer(openai_api_key)
-                summarization = summarizer.paragraph_summarize_query(transcript, 'gpt_prompt')
-                # TODO: Here put logic call to endpoint.
-                user_history.session_history(summarization, video_title, youtube_url)
+                summ = summarizer.paragraph_summarize_query(transcript, 'gpt_prompt')
+
+                summarization = summarization_wrapper(summ)
+
+                history = History()
+                history.session_history(summarization, video_title, youtube_url)
+
+                # user_history.session_history(summarization, video_title, youtube_url)
 
                 if summarization:
                     st.markdown(summarization)
@@ -72,22 +111,6 @@ with tab1:
         st.stop()
 
 with tab2:
-    st.info("Note: In the current version your summaries are present only in the current browser session and will be lost after refresh.")
-
-    ######## Info for dev
-    # st.info(st.session_state["history"])
-    # st.info(st.session_state["history_change"])
-    # # limit = 20
-    ########
-    history_as_list = user_history.history()
-    # vid_name, format_time, ans, url
-    for vid_name, time, answer, url in reversed(history_as_list):
-        # title
-        with st.expander(vid_name):
-            # timestamp
-            st.write(time)
-            # vid_embed
-            st.video(url)
-            # summary
-            st.markdown(answer)
+    # Streamlit does not offer conditional rendering
+    history_display()
 
