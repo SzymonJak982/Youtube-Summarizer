@@ -8,7 +8,7 @@ The YouTube Summarizer App is a simple Python app providing detailed, college-li
 ## Features
 
 - **Video Summarization**: Converts YouTube transcript into detailed text notes using GPT model.
-- **Saving summaries**- Utilizes SQLAlchemy for efficient data storage. 
+- **Saving summaries**: Utilizes SQLAlchemy for efficient data storage. 
 - **Streamlit Interface**: User-friendly web interface for easy operation.
 - **Docker Integration**: Supports Docker for straightforward setup.
 
