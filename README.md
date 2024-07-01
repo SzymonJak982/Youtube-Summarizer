@@ -3,11 +3,12 @@
 <img src="https://github.com/SzymonJak982/Youtube-Summarizer/blob/main/logo.png?raw=true" alt="Project Logo" width="200" height="200" title="Project Logo">
 
 
-The YouTube Summarizer App provides detailed, college-like notes for YouTube videos. It's ideal for students, researchers, or anyone looking to extract concise, informative summaries from educational videos. The app runs locally using Streamlit and is equipped with Docker support for easy deployment.
+The YouTube Summarizer App is a simple Python app providing detailed, college-like notes for YouTube videos. It's ideal for students, researchers, or anyone looking to extract concise, informative summaries from educational videos. The app runs locally using FastAPI for backend and Streamlit for user interface. It is also equipped with Docker support for easy deployment.
 
 ## Features
 
 - **Video Summarization**: Converts YouTube transcript into detailed text notes using GPT model.
+- **Saving summaries**- Utilizes SQLAlchemy for efficient data storage. 
 - **Streamlit Interface**: User-friendly web interface for easy operation.
 - **Docker Integration**: Supports Docker for straightforward setup.
 
@@ -16,9 +17,7 @@ The YouTube Summarizer App provides detailed, college-like notes for YouTube vid
 - *Summary history: Summarizer can now also store created summaries in local sqlite session*
 - *Currently working on setting up a Whisper model locally to enhance transcript generation*
 ### Current development:
-   - enhancing transcript generation functionality using Whisper
-   - recreating backend using FastAPI; also streamlit ux optimisation
-   - preserving generated summaries using local db model 
+   - enhancing transcript generation functionality using Whisper 
    - generation time optimisation using async logic for API calls and Tenacity 
 
 ## Prerequisites
