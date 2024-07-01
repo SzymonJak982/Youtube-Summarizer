@@ -11,3 +11,7 @@ pydub
 openai-whisper
 pytest
 pytest-mock
+sqlalchemy
+fastapi
+pydantic
+#uvicorn
