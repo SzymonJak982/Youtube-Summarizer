@@ -4,6 +4,9 @@ import time
 import textwrap
 from openai._exceptions import AuthenticationError, InternalServerError
 from typing import Optional, Union
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Summarizer:
@@ -18,7 +21,7 @@ class Summarizer:
         os.environ['OPENAI_API_KEY'] = self.config
         client = OpenAI()
         counter = 0
-        max_retries = 5
+        max_retries = 3
 
         while True:
             try:
@@ -39,6 +42,7 @@ class Summarizer:
                 return False
 
             except (InternalServerError, Exception) as e:
+                logging.warning(e)
                 counter += 1
                 if counter <= max_retries:
                     time.sleep(1)
