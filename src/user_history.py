@@ -1,14 +1,11 @@
-import json
-
-import streamlit as st
+# import json
+# import streamlit as st
 import time
 import requests
 
 import logging
 
 logging.basicConfig(level=logging.INFO)
-
-#TODO: Placeholder below. Initiaite local db to store the history on disk instead of in streamlit state.
 
 
 class History:
@@ -51,25 +48,26 @@ class History:
         return response.text#json.dumps(response.text, ensure_ascii=False)
 
 
-def history():
-    return st.session_state["history"]
-
-
-def session_history(answer, video_name, video_url):
-
-    local_time = time.localtime()
-    formatted_time = time.strftime("%d-%m-%Y %H:%M:%S", local_time)
-    entry = (video_name, formatted_time, answer, video_url)
-
-    if "history" not in st.session_state:
-        st.session_state["history"] = []
-
-    entry_exists = any(vid_name == entry[0] for vid_name, format_time, ans, url in st.session_state['history'])
-    if not entry_exists:
-        st.session_state["history"].append(entry)
-    #     st.session_state["history_change"] = True
-    # else:
-    #     st.session_state["history_change"] = False
+##  old functions for accessing session- related data
+# def history():
+#     return st.session_state["history"]
+#
+#
+# def session_history(answer, video_name, video_url):
+#
+#     local_time = time.localtime()
+#     formatted_time = time.strftime("%d-%m-%Y %H:%M:%S", local_time)
+#     entry = (video_name, formatted_time, answer, video_url)
+#
+#     if "history" not in st.session_state:
+#         st.session_state["history"] = []
+#
+#     entry_exists = any(vid_name == entry[0] for vid_name, format_time, ans, url in st.session_state['history'])
+#     if not entry_exists:
+#         st.session_state["history"].append(entry)
+#     #     st.session_state["history_change"] = True
+#     # else:
+#     #     st.session_state["history_change"] = False
 
 
 

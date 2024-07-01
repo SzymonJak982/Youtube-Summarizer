@@ -15,6 +15,7 @@ disclaimer = st.info("Note: In this version, summarization is available almost e
 
 
 def history_display():
+    """Displays history read from sqlite session as expanders. Limit:20"""
     # history_as_list = user_history.history()
     try:
         history = History()
@@ -24,7 +25,7 @@ def history_display():
             # title
             with st.expander(record["video_title"]):
                 st.write(record["timestamp"])
-                # st.video(record["video_url"])
+                st.video(record["video_url"])
                 st.markdown(record["summary"])
 
     except Exception as e:
@@ -112,5 +113,6 @@ with tab1:
 
 with tab2:
     # Streamlit does not offer conditional rendering
+
     history_display()
 
