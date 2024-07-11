@@ -75,6 +75,13 @@ with tab1:
             type="primary",
             )
 
+        quiz_generation = False
+
+        st.write(" ")
+        on = st.toggle("Test your knowledge!")
+        if on:
+            quiz_generation = True
+
     if youtube_url and openai_api_key and submit_button:
 
         st.write(" ")
@@ -89,18 +96,28 @@ with tab1:
                 video_title = youtube.get_youtube_title(youtube_url)
                 st.header(video_title)
                 st.video(youtube_url)
-                summarizer = Summarizer(openai_api_key)
-                summ = summarizer.paragraph_summarize_query(transcript, 'gpt_prompt')
 
+                summarizer = Summarizer(openai_api_key)
+                summ = summarizer.paragraph_summarize_query(transcript)
                 summarization = summarization_wrapper(summ)
+                print(summarization)
+
+                if quiz_generation:
+                    qna = summarizer.quiz_generator(summarization)
 
                 history = History()
                 history.session_history(summarization, video_title, youtube_url)
 
-                # user_history.session_history(summarization, video_title, youtube_url)
+                def quiz_display(question_and_answer):
+                    for entry in question_and_answer:
+                        with st.expander(entry):
+                            pass
+
 
                 if summarization:
                     st.markdown(summarization)
+                    if quiz_generation:
+                        st.markdown(qna)
                     st.success("Done!")
                     st.balloons()
                 else:
@@ -111,8 +128,8 @@ with tab1:
     else:
         st.stop()
 
-with tab2:
-    # Streamlit does not offer conditional rendering
-
-    history_display()
+# with tab2:
+#     # Streamlit does not offer conditional rendering
+#
+#     history_display()
 

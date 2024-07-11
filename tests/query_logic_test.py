@@ -6,7 +6,6 @@ import os
 # from unittest.mock import patch, MagicMock
 # from pytest_mock import MockerFixture
 
-
 @pytest.fixture
 def summarizer():
     """Sets up Summarizer instance with OpenAI API key."""
@@ -20,6 +19,8 @@ def test_gpt_query(summarizer):
     response = summarizer.gpt_query(test_query)
     assert response is not False
 
+# TODO: Add mark-parametrize
+
 
 def test_paragraph_summarize_query(summarizer):
 
@@ -30,7 +31,7 @@ def test_paragraph_summarize_query(summarizer):
     gpt_prompt_path = os.path.abspath(f"{cwd}/../src/gpt_prompt")
     print(gpt_prompt_path)
 
-    result = summarizer.paragraph_summarize_query(test_transcript, gpt_prompt_path)
+    result = summarizer.paragraph_summarize_query(test_transcript)
     assert isinstance(result, str)
 
 
@@ -41,7 +42,7 @@ def test_paragraph_summarize_query_with_warning(summarizer):
     cwd = os.getcwd()
     gpt_prompt_path = os.path.abspath(f"{cwd}/../src/gpt_prompt")
 
-    result = summarizer.paragraph_summarize_query(bad_request_transcript, gpt_prompt_path)
+    result = summarizer.paragraph_summarize_query(bad_request_transcript)
     assert result is False
     assert summarizer.warning is not False
 

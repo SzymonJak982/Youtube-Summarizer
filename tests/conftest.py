@@ -1,6 +1,7 @@
 import os
 import pytest
 
+# TODO: Transfer other fixtures  here
 
 @pytest.fixture(autouse=True)
 def show_working_directory():
