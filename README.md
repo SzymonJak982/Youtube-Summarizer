@@ -50,6 +50,11 @@ Before you begin, ensure you have the following:
   ```bash
   streamlit run app.py
  ```
+4. **In another terminal window, activate history endpoint with uvicorn**
+
+ ```bash
+  uvicorn src.endpoints.endpoints:app --reload
+ ```  
 
 ### Using Docker
 
