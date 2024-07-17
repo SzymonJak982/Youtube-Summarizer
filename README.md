@@ -88,7 +88,7 @@ Contributions are welcome! Please fork the repository and submit pull requests, 
 Here are some of the possible contribution ideas:
 - Adopt local LLM for more independency from OpenAI, e.g. using [Mixtral model](https://huggingface.co/cognitivecomputations/dolphin-2.6-mixtral-8x7b)
 - Develop transcript fetching from other platforms with API calls as well as webscraping if needed
-- Develop asynchronious approach to summary genenration to speed up the process for long transcripts 
+- Develop asynchronious approach to summary generation to speed up the process for long transcripts 
 
 ## Licence
 
