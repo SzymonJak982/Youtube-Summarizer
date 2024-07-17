@@ -17,8 +17,8 @@ The YouTube Summarizer App is a simple Python app providing detailed, college-li
 - *Summary history: Summarizer can now also store created summaries in local sqlite session*
 - *Currently working on setting up a Whisper model locally to enhance transcript generation*
 ### Current development:
-   - enhancing transcript generation functionality using Whisper 
-   - generation time optimisation using async logic for API calls and Tenacity 
+   - Enhancing transcript generation functionality using Whisper 
+   - Quiz-mode- creating interactive quiz experience for the user, using questions generated from summary
 
 ## Prerequisites
 
@@ -33,24 +33,36 @@ Before you begin, ensure you have the following:
 
 1. **Clone the Repository**
    
-   ```bash
-   git clone https://github.com/SzymonJak982/Youtube-Summarizer.git
-   
-   cd Youtube-Summarizer
-   ```
+```bash
+git clone https://github.com/SzymonJak982/Youtube-Summarizer.git
+cd Youtube-Summarizer
+```
+2. **Create a virtual environment in Python and activate it**:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
 3. **Install dependencies**
    
   ```bash
   pip install -r requirements.txt
   ```
+4. **Get your OpenAI API key**
+To get the necessary API key, follow these steps:
 
-3. **Run the App**
+    1. Go to the [OpenAI platform website](https://platform.openai.com/docs/overview)
+    2. If you don't have an account, click "Sign up" and create one.
+    3. Once logged in, navigate to the API key management page.
+    4. Click "Create new secret key" and note down the generated API key (you would not see the key again).
+
+5. **Run the App**
    
   ```bash
   streamlit run app.py
  ```
-4. **In another terminal window, activate history endpoint with uvicorn**
+6. **In another terminal window, activate history endpoint with uvicorn (for summary history)**
 
  ```bash
   uvicorn src.endpoints.endpoints:app --reload
@@ -59,23 +71,26 @@ Before you begin, ensure you have the following:
 ### Using Docker
 
 1. **Clone the Repository**
-   
-   ```bash
-   git clone https://github.com/SzymonJak982/Youtube-Summarizer.git
-   
-   cd Youtube-Summarizer
-   ```
+
+```bash
+git clone https://github.com/SzymonJak982/Youtube-Summarizer.git
+cd Youtube-Summarizer
+```
 
 3. **Build and start the service**
    
-   ```bash
-   docker-compose up --build
-   ```
+```bash
+docker-compose up --build
+```
 
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit pull requests, or open an issue to suggest features or report bugs.
+Here are some of the possible contribution ideas:
+- Adopt local LLM for more independency from OpenAI, e.g. using [Mixtral model](https://huggingface.co/cognitivecomputations/dolphin-2.6-mixtral-8x7b)
+- Develop transcript fetching from other platforms with API calls as well as webscraping if needed
+- Develop asynchronious approach to summary genenration to speed up the process for long transcripts 
 
 ## Licence
 
-Apache-2.0 License
+This project is under Apache-2.0 License. If you wish to use it in your own project you should credit the orginal owner.  
