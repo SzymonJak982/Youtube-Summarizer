@@ -13,9 +13,8 @@ The YouTube Summarizer App is a simple Python app providing detailed, college-li
 - **Docker Integration**: Supports Docker for straightforward setup.
 
 ## Latest updates
-*01.07.2024:*
-- *Summary history: Summarizer can now also store created summaries in local sqlite session*
-- *Currently working on setting up a Whisper model locally to enhance transcript generation*
+*17.07.2024:*
+- **Quiz mode**- added option of exploratory question/answer generation
 ### Current development:
    - Enhancing transcript generation functionality using Whisper 
    - Quiz-mode- creating interactive quiz experience for the user, using questions generated from summary
