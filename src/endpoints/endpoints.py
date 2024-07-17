@@ -37,7 +37,7 @@ def add_summary2history(summary: schema.Item, db: Session = Depends(get_db)):
 
 # TODO: Debug the issue with correct schema
 @app.get("/summaries/", response_model=List[schema.Item])
-def read_summaries_history(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_summaries_history(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
     summaries = crud_operations.get_summaries(db, skip=skip, limit=limit)
     return summaries
 

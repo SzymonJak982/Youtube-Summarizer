@@ -13,7 +13,7 @@ class History:
         pass
 
     @staticmethod
-    def session_history(answer, video_name, video_url):
+    def local_history(answer, video_name, video_url):
 
         local_time = time.localtime()
         formatted_time = time.strftime("%d-%m-%Y %H:%M:%S", local_time)

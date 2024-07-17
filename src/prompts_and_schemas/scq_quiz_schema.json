@@ -1,0 +1,57 @@
+{
+    "1": {
+        "scq": "single choice question",
+        "options": {
+            "a": "choice here",
+            "b": "choice here",
+            "c": "choice here",
+            "d": "choice here"
+        },
+        "correct": "correct answer",
+        "explanation": "Explanation goes here"
+    },
+    "2": {
+        "scq": "single choice question",
+        "options": {
+            "a": "choice here",
+            "b": "choice here",
+            "c": "choice here",
+            "d": "choice here"
+        },
+        "correct": "correct answer",
+        "explanation": "Explanation goes here"
+    },
+    "3": {
+        "scq": "single choice question",
+        "options": {
+            "a": "choice here",
+            "b": "choice here",
+            "c": "choice here",
+            "d": "choice here"
+        },
+        "correct": "correct answer",
+        "explanation": "Explanation goes here"
+    },
+  "4" : {
+        "scq": "single choice question",
+        "options": {
+            "a": "choice here",
+            "b": "choice here",
+            "c": "choice here",
+            "d": "choice here"
+        },
+        "correct": "correct answer",
+        "explanation": "Explanation goes here"
+    },
+  "5" : {
+        "scq": "single choice question",
+        "options": {
+            "a": "choice here",
+            "b": "choice here",
+            "c": "choice here",
+            "d": "choice here"
+        },
+        "correct": "correct answer",
+        "explanation": "Explanation goes here"
+    }
+}

@@ -9,6 +9,7 @@ from .schema import Item
 
 def get_summaries(db: Session, skip: int = 0, limit: int = 20):
     # TODO: Add 'if None' return None condition
+    # TODO: Sort so the newest would be on top
     return db.query(Summary).offset(skip).limit(limit).all()
 
 
@@ -16,6 +17,7 @@ def get_summary_by_id(db: Session, summ_id: int):
     return db.query(Summary).filter(Summary.id == summ_id).first()
 
 
+# TODO: Add option for deleting duplicates used in dev and testing
 # ### specific for search/get operations:
 # def get_summary_by_title(db:Session, title: str):
 #     return db.query(Summary).filter(Summary.video_title.like(title))

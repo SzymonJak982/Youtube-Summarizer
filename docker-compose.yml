@@ -9,7 +9,7 @@ services:
     working_dir: /app
     volumes:
       -  ./src:/app
-  backend:
+  streamlit:
     image: notetaker
     env_file:
       - .env
@@ -20,6 +20,20 @@ services:
       -  ./src:/app
     entrypoint: ''
     command: ["streamlit", "run", "app.py", "--server.runOnSave=true", "--browser.gatherUsageStats=false"]
+
+  history:
+    image: notetaker
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    working_dir: /app
+    volumes:
+      - ./src:/app
+      - sqlite_data:/app/data
+    entrypoint: ''
+    command: [ "uvicorn", "src.endpoints.endpoints:app", "--reload", "--host", "0.0.0.0", "--port", "8000" ]
+
 
 
 

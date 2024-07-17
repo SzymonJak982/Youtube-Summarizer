@@ -5,8 +5,9 @@ import textwrap
 from openai._exceptions import AuthenticationError, InternalServerError
 from typing import Optional, Union
 import logging
+from utilities import get_path
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 class Summarizer:
@@ -15,7 +16,7 @@ class Summarizer:
         self.config = config
         self.warning = None
 
-    def gpt_query(self, request, json_response=False) -> Optional[Union[str, bool]]:
+    def gpt_query(self, request, temperature, json_response=False) -> Optional[Union[str, bool]]:
         #TODO: Add output-type declaration and menage empty/non empty responses (isinstance+len) tather than str+ bool
 
         os.environ['OPENAI_API_KEY'] = self.config
@@ -28,7 +29,7 @@ class Summarizer:
                 if json_response:
                     response = client.chat.completions.create(
                         model="gpt-3.5-turbo-0125",
-                        temperature=0,
+                        temperature=temperature,
                         response_format={"type": "json_object"},
                         messages=[
                             {"role": "system", "content": "You are a helpful assistant"},
@@ -41,7 +42,7 @@ class Summarizer:
                 else:
                     response = client.chat.completions.create(
                         model="gpt-3.5-turbo-0125",
-                        temperature=0,
+                        temperature=temperature,
                         messages=[
                             {"role": "system", "content": "You are a helpful assistant"},
                             {"role": "user", "content": request}
@@ -68,10 +69,12 @@ class Summarizer:
     def chunker(text, chunk_length) -> Optional[list]:
         return textwrap.wrap(text, chunk_length)
 
-    def paragraph_summarize_query(self, transcript) -> Optional[Union[str, bool]]:
+    def paragraph_summarize_query(self, transcript) -> \
+            Optional[Union[str, bool]]:
         chunks = Summarizer.chunker(text=transcript, chunk_length=8000)
 
-        gpt_prompt_path = "prompts_and_schemas/gpt_prompt"
+        # gpt_prompt_path = "prompts_and_schemas/gpt_prompt"
+        gpt_prompt_path = get_path("gpt_prompt")
 
         with open(gpt_prompt_path, 'r') as p:
             gpt_prompt_template = p.read()
@@ -83,7 +86,7 @@ class Summarizer:
             count = count + 1
             current_paragraph = chunk
             prompt = gpt_prompt_template.format_map({'paragraph': current_paragraph})
-            summary = self.gpt_query(prompt)
+            summary = self.gpt_query(request=prompt, temperature=0)
 
             if self.warning:
                 return False
@@ -94,23 +97,29 @@ class Summarizer:
 
         return ' '.join(result)
 
-    def quiz_generator(self, request):
+    def quiz_generator(self, request, is_scq_quiz=False):
         """ Open AI query for quiz generation
-        :param request: summary generated for the video"""
 
-        quiz_prompt_path = "prompts_and_schemas/quiz_prompt"
-        json_schema_path = "prompts_and_schemas/quiz_schema.json"
+        :param request: summary generated for the video
+        :param is_scq_quiz: argument from streamlit, specifying if quiz should be a single choice test.
+        By default, set to False if not specified otherwise"""
+
+        # TODO: Provide additional instructions to avoid stupid questions (prompt-related, needs some testing)
+        # TODO: better path management!
+
+        quiz_prompt_path = get_path("quiz_prompt") if is_scq_quiz is False else get_path("scq_quiz_prompt")
+        quiz_json_schema_path = get_path("quiz_schema.json") if is_scq_quiz is False else get_path("choice_quiz_schema.json")
 
         with open(quiz_prompt_path, 'r') as p:
             quiz_prompt_template = p.read()
 
-        with open(json_schema_path, 'r') as s:
+        with open(quiz_json_schema_path, 'r') as s:
             quiz_response_schema = s.read()
 
         prompt = quiz_prompt_template.format_map({'number_of_questions': 5, 'json_schema': quiz_response_schema,
                                                   'text': request})
 
-        return self.gpt_query(prompt, json_response=True)
+        return self.gpt_query(prompt, json_response=True, temperature=0.5)
 
 
 
