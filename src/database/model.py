@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from .database import Base
-# from sqlalchemy.ext.declarative import declarative_base
+# from .database import Base
+from sqlalchemy.ext.declarative import declarative_base
 # from sqlalchemy.orm import sessionmaker
 # from sqlalchemy import create_engine
 
@@ -9,7 +9,7 @@ from .database import Base
 # engine = create_engine('sqlite:///local_db_file.db')
 # Session = sessionmaker(autoflush=False, bind=engine)
 #
-# Base = declarative_base()
+Base = declarative_base()
 
 
 class Summary(Base):

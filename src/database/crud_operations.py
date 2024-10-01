@@ -9,7 +9,7 @@ from .schema import Item
 
 def get_summaries(db: Session, skip: int = 0, limit: int = 20):
     # TODO: Add 'if None' return None condition
-    # TODO: Sort so the newest would be on top
+    # TODO: Sort so the latest would be on top
     return db.query(Summary).offset(skip).limit(limit).all()
 
 
@@ -24,8 +24,8 @@ def get_summary_by_id(db: Session, summ_id: int):
 
 
 def get_summary_by_url(db:Session, url: str):
+    # not implemented
     return db.query(Summary).filter(Summary.video_url == url).first()
-###
 
 
 def add_summary(db: Session,  summary: Item):
