@@ -9,7 +9,8 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-# st.title('Youtube Summarizer')
+st.title('Youtube Summarizer')
+
 st.write("""This is an experimental project of YouTube summarizer, creating notes from youtube videos.""")
 
 disclaimer = st.info("Note: In this version, summarization is available almost exclusively for english-language videos")
