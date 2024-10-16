@@ -18,6 +18,7 @@ class Summary(Base):
     video_title = Column(String, nullable=False)
     timestamp = Column(String, nullable=True)
     video_url = Column(String, nullable=False)
+    video_id = Column(String, nullable=True)
     summary = Column(String, nullable=True)
     method_used = Column(String, nullable=True)
 

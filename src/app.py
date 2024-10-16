@@ -17,6 +17,7 @@ disclaimer = st.info("Note: In this version, summarization is available almost e
 
 @st.cache_data
 def summarization_wrapper(output):
+    # TODO: Figure out what to do with it or delete it.
     """Small util wrapper"""
     return output
 
@@ -92,6 +93,8 @@ with tab1:
 
                 summarizer = Summarizer(openai_api_key)
                 summ = summarizer.paragraph_summarize_query(transcript)
+                #TODO: This needs to be removed- introduced as an idea to
+                # cache the summarization between refresh but not working
                 summarization = summarization_wrapper(summ)
                 print(summarization)
 

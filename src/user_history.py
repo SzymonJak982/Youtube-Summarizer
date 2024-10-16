@@ -1,9 +1,9 @@
-# import json
-# import streamlit as st
 import time
 import requests
-
 import logging
+
+from youtube_logic import YoutubeApi
+from database import crud_operations
 
 logging.basicConfig(level=logging.INFO)
 
@@ -11,6 +11,11 @@ logging.basicConfig(level=logging.INFO)
 class History:
     def __init__(self):
         pass
+
+    @staticmethod
+    def update_if_exists():
+        pass
+        # crud_operations.check_if_exists()
 
     @staticmethod
     def local_history(answer, video_name, video_url):
@@ -21,17 +26,25 @@ class History:
         # only temporary
         url = "http://127.0.0.1:8000/summaries/"
 
-        # 'method used': key to distinguish between whisper generated/og transcript generated answer
+        video_id = YoutubeApi(video_url)
+        video_id_parsed = video_id.url_to_id()
+
+
+        # 'method used': key to distinguish between whisper generated/og transcript generated answer- to be implemented
         data = {
             "video_title": f"{video_name}",
             "timestamp": f"{formatted_time}",
             "video_url": f"{video_url}",
+            "video_id": f"{video_id_parsed}",
             "summary": f"{answer}",
             "method_used": "unfilled"
         }
 
+
+
         response = requests.post(url, json=data)
 
+        # TODO Add response handler for different HTTP codes
         if response.status_code == 200:
             logging.info("Summary added successfully!")
 
@@ -41,9 +54,9 @@ class History:
 
     @staticmethod
     def serialize_history():
-
+        # TODO: add this address to public config files- when hosted on Azure change code accordingly
         url = "http://127.0.0.1:8000/summaries/"
-
+        # TODO: Check this serialization approach- maybe related with 'None' bug? Model_dump instead?
         response = requests.get(url)
         return response.text#json.dumps(response.text, ensure_ascii=False)
 

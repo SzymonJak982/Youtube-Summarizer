@@ -24,17 +24,18 @@ class StreamlitUtils:
         try:
             history = History()
             history_as_list = history.serialize_history()
+            # TODO: segregate dictionaries in a list based on timestamp for displaying updated at the top
             # vid_name, format_time, ans, url
             for record in reversed(ast.literal_eval(history_as_list)):
                 # title
                 with st.expander(record["video_title"]):
                     st.write(record["timestamp"])
+                    st.write(record["video_id"])
                     st.video(record["video_url"])
                     st.markdown(record["summary"])
 
         except Exception as e:
             logging.info(e)
-            # Handling empty database for new user
             return None
 
     @staticmethod
@@ -78,6 +79,7 @@ class StreamlitUtils:
     @staticmethod
     def save_quiz_questions(generated_quiz):
 
+        # TODO: add tmp/json file to publically available config file
         directory = "tmp/json"
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -87,9 +89,6 @@ class StreamlitUtils:
         with open(f"{directory}/test_quiz.json", "w") as json_file:
             # json.dump(data, json_file, indent=4)
             json_file.write(generated_quiz)
-
-
-
 
 
 class Quiz:
@@ -114,7 +113,7 @@ class Quiz:
 
     @staticmethod
     def render_quiz():
-        """All of the logic for rendering quiz
+        """All of the logic for rendering interactive quiz
         Original streamlit-quiz idea by banderpt: https://github.com/benderpt/streamlit_quizz_template/blob/main/main.py"""
 
         # initialising session state variables

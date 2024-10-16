@@ -21,9 +21,9 @@ class YoutubeApi:
             return None
 
     def url_to_id(self):
+        # TODO: This is shit implementation. Rewrite so it can be used from outside
         try:
             # parsing for url-s with session identifier
-            #TODO: Handle youtube shortlinks also
             pattern = r'\?si'
             url = self.video_url
 
@@ -32,7 +32,7 @@ class YoutubeApi:
             else:
                 video_id = self.video_url.split('v=')[1][:11]
             self.video_id = video_id
-            return True
+            return video_id
 
         except Exception as e:
             self.warning = "Couldn't parse given url"

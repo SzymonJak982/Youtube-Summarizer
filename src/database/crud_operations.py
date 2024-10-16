@@ -17,20 +17,16 @@ def get_summary_by_id(db: Session, summ_id: int):
     return db.query(Summary).filter(Summary.id == summ_id).first()
 
 
-# TODO: Add option for deleting duplicates used in dev and testing
-# ### specific for search/get operations:
-# def get_summary_by_title(db:Session, title: str):
-#     return db.query(Summary).filter(Summary.video_title.like(title))
-
-
-def get_summary_by_url(db:Session, url: str):
-    # not implemented
-    return db.query(Summary).filter(Summary.video_url == url).first()
+def check_if_exists(db: Session, vid_id: str):
+    """Checking if summary with given URL identifier (vid_id) already exists in db"""
+    record = db.query(Summary).filter(Summary.video_id == vid_id).first()
+    return record
 
 
 def add_summary(db: Session,  summary: Item):
     with db as db:
         try:
+            # check if summary exists here.
             db_summary = Summary(**summary.dict())
             db.add(db_summary)
             db.commit()
@@ -39,6 +35,25 @@ def add_summary(db: Session,  summary: Item):
             return db_summary
         except Exception as e:
             print(f"Exception happened: {e}")
+
+
+def update_existing_summary(db:Session, id, summary: Item):
+    with db:
+        try:
+            record = db.query(Summary).filter(Summary.id == id).first()
+
+            updated_data = summary.dict(exclude_unset=True)
+            for key, value in updated_data.items():
+                setattr(record, key, value)
+
+            db.commit()
+            db.refresh(record)
+            print("Summary successfully updated.")
+            return record
+        except Exception as e:
+            print(f"Exception happened: {e}")
+
+
 
 
 
