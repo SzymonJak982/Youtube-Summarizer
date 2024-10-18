@@ -26,7 +26,7 @@ tab1, tab2, tab3 = st.tabs(["Summarizer", "Your summaries", "Your quiz"])
 
 
 with tab2:
-    st.info("Note: In the current version your summaries are stored locally as .db file in this project.")
+    st.info("⟳ Refresh the page to see the most recent summary")
     utils = StreamlitUtils()
     utils.history_display()
 
