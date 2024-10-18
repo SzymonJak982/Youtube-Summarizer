@@ -3,7 +3,7 @@
 from pydantic import BaseModel
 from typing import Optional
 
-#TODO: Add video ID
+
 class Item(BaseModel):
     video_title: str
     timestamp: str
@@ -16,8 +16,8 @@ class Item(BaseModel):
         from_attributes = True
 
 
-class ItemUpdate(Item):
-    # TODO:
-    pass
+class UpdateItem(Item):
+    # regular id not that useful in Youtube context. #TODO: Delete if unnecessary
+    id: int
 
 

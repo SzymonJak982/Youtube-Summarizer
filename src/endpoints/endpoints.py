@@ -4,6 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException, Response, status
 from typing import Dict, List
 from src.database import schema, crud_operations
 from src.database.database import SessionLocal
+from src.database.database import get_db
 import uvicorn
 import logging
 # import json
@@ -12,14 +13,6 @@ logging.basicConfig(level=logging.INFO)
 
 
 app = FastAPI()
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.post("/summaries/", response_model=schema.Item)
@@ -49,11 +42,13 @@ def get_summary(summ_id: int, db: Session = Depends(get_db)):
     return summary
 # check what kind of output we want:List?
 
-@app.get("/summaries/check/{vid_id}", response_model=schema.Item)
+@app.get("/summaries/check/{vid_id}", response_model=schema.UpdateItem)
 def check_if_summary_exists(vid_id: str, db: Session = Depends(get_db)):
     summary = crud_operations.check_if_exists(db, vid_id)
     if summary is None:
-        raise HTTPException(status_code=404, detail="Summary not found")
+        # raise HTTPException(status_code=404, detail="Summary not found")
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
     return summary
 
 # @app.get("/summaries/by_title/{summ_title}", response_model=schema.Item)
@@ -64,8 +59,8 @@ def check_if_summary_exists(vid_id: str, db: Session = Depends(get_db)):
 #     return summary
 
 
-@app.put("/summaries/{summ_id}", response_model=schema.Item)
-def update_summary(summ_id: int, summary: schema.Item, db: Session = Depends(get_db)):
+@app.put("/summaries/{summ_id}", response_model=schema.UpdateItem)
+def update_summary(summ_id: int, summary: schema.UpdateItem, db: Session = Depends(get_db)):
     summary = crud_operations.update_existing_summary(db, summ_id, summary)
     return summary
 

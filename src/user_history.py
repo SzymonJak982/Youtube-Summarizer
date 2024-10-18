@@ -3,27 +3,34 @@ import requests
 import logging
 
 from youtube_logic import YoutubeApi
-from database import crud_operations
+# from database import crud_operations
+from config import Config
 
 logging.basicConfig(level=logging.INFO)
 
 
 class History:
     def __init__(self):
-        pass
+        self.config = Config.API_URL
+        self.summary_data = None
 
-    @staticmethod
-    def update_if_exists():
-        pass
-        # crud_operations.check_if_exists()
 
-    @staticmethod
-    def local_history(answer, video_name, video_url):
+    def update_if_exists(self, video_id):
+        url = f"{self.config}/check/{video_id}"
+        response = requests.get(url)
+        if response == 200:
+            summary2update = response.text
+
+
+
+
+    def local_history(self, answer, video_name, video_url):
 
         local_time = time.localtime()
         formatted_time = time.strftime("%d-%m-%Y %H:%M:%S", local_time)
 
         # only temporary
+
         url = "http://127.0.0.1:8000/summaries/"
 
         video_id = YoutubeApi(video_url)
@@ -31,7 +38,7 @@ class History:
 
 
         # 'method used': key to distinguish between whisper generated/og transcript generated answer- to be implemented
-        data = {
+        self.summary_data = {
             "video_title": f"{video_name}",
             "timestamp": f"{formatted_time}",
             "video_url": f"{video_url}",
@@ -40,9 +47,7 @@ class History:
             "method_used": "unfilled"
         }
 
-
-
-        response = requests.post(url, json=data)
+        response = requests.post(url, json=self.summary_data)
 
         # TODO Add response handler for different HTTP codes
         if response.status_code == 200:

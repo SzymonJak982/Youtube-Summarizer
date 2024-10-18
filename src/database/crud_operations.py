@@ -8,8 +8,6 @@ from .schema import Item
 
 
 def get_summaries(db: Session, skip: int = 0, limit: int = 20):
-    # TODO: Add 'if None' return None condition
-    # TODO: Sort so the latest would be on top
     return db.query(Summary).offset(skip).limit(limit).all()
 
 
