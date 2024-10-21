@@ -3,6 +3,7 @@ from pytube import YouTube
 from youtube_transcript_api import YouTubeTranscriptApi
 import re
 import time
+from logger import log
 
 
 class YoutubeApi:
@@ -13,15 +14,26 @@ class YoutubeApi:
 
     @staticmethod
     def get_youtube_title(url):
-        try:
-            youtube = YouTube(url)
-            return youtube.title
-        except:
-            print("Unable to connect to Youtube API")
-            return None
+        max_retries = 3
+        counter = 0
+
+        while True:
+            try:
+                youtube = YouTube(url)
+                if youtube.title is None:
+                    raise Exception
+                else:
+                    return youtube.title
+
+            except:
+                counter += 1
+                log.info(f"Unable to connect to Youtube API. Retrying {counter}/{max_retries}")
+                time.sleep(1)
+
+                if counter > max_retries:
+                    return False
 
     def url_to_id(self):
-        # TODO: This is shit implementation. Rewrite so it can be used from outside
         try:
             # parsing for url-s with session identifier
             pattern = r'\?si'
@@ -77,6 +89,7 @@ class YoutubeApi:
 
     @staticmethod
     def download_audio(video_url, output_path="../tmp/audio_stream.mp4"):
+        # for Whisper/ Local LLM model. Not implemented at the moment
         try:
             start_time = time.time()
 

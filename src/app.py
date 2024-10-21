@@ -4,12 +4,7 @@ from query_logic import Summarizer
 from user_history import History
 from app_utils import StreamlitUtils, Quiz
 
-# import ast
-import logging
-
-logging.basicConfig(level=logging.INFO)
-
-st.title('Youtube Summarizer')
+# st.title('Youtube Summarizer')
 
 st.write("""This is an experimental project of YouTube summarizer, creating notes from youtube videos.""")
 
@@ -18,7 +13,7 @@ disclaimer = st.info("Note: In this version, summarization is available almost e
 @st.cache_data
 def summarization_wrapper(output):
     # TODO: Figure out what to do with it or delete it.
-    """Small util wrapper"""
+    """Small util wrapper for caching summary- does not work"""
     return output
 
 

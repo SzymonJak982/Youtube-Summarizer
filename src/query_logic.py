@@ -4,19 +4,22 @@ import time
 import textwrap
 from openai._exceptions import AuthenticationError, InternalServerError
 from typing import Optional, Union
-import logging
+from logger import log
 from utilities import get_path
 
-logging.basicConfig(level=logging.INFO)
 
 
 class Summarizer:
-    # TODO: Menage downstream processing and warnings with this class
+    # TODO: Optional: Manage downstream processing and warnings with this class
     def __init__(self, config):
         self.config = config
         self.warning = None
 
     def gpt_query(self, request, temperature, json_response=False) -> Optional[Union[str, bool]]:
+        """GPT-query method for creating summaries and creating quizes
+        :param json_response: specifing response as a JSON file for quiz_generator method
+        :param temperature: abstraction factor for GPT
+        :param request: prompt for summary or quiz generation (prompt templates in /tmp/) """
         #TODO: Add output-type declaration and menage empty/non empty responses (isinstance+len) tather than str+ bool
 
         os.environ['OPENAI_API_KEY'] = self.config
@@ -56,7 +59,7 @@ class Summarizer:
                 return False
 
             except (InternalServerError, Exception) as e:
-                logging.warning(e)
+                log.warning(e)
                 counter += 1
                 if counter <= max_retries:
                     time.sleep(1)
@@ -91,7 +94,7 @@ class Summarizer:
             if self.warning:
                 return False
 
-            #TODO: Handle state logging to streamlit
+            #TODO: Optional: Handle state logging to streamlit like progress bar
             print('\n\n\n', count, 'of', len(chunks), summary)
             result.append(summary)
 

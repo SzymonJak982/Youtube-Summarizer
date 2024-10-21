@@ -1,7 +1,6 @@
 import streamlit as st
 from user_history import History
-import ast
-import logging
+from logger import log
 import json
 import os
 
@@ -23,11 +22,10 @@ class StreamlitUtils:
         # history_as_list = user_history.history()
         try:
             history = History()
-            history_as_list = history.serialize_history()
+            history_as_list = json.loads(history.serialize_history())
             # TODO: segregate dictionaries in a list based on timestamp for displaying updated at the top
             # vid_name, format_time, ans, url
-            for record in reversed(ast.literal_eval(history_as_list)):
-                # title
+            for record in reversed(history_as_list):
                 with st.expander(record["video_title"]):
                     st.write(record["timestamp"])
                     st.write(record["video_id"])
@@ -35,7 +33,7 @@ class StreamlitUtils:
                     st.markdown(record["summary"])
 
         except Exception as e:
-            logging.info(e)
+            log.info(e)
             return None
 
     @staticmethod

@@ -6,18 +6,14 @@ from src.database import schema, crud_operations
 from src.database.database import SessionLocal
 from src.database.database import get_db
 import uvicorn
-import logging
-# import json
-
-logging.basicConfig(level=logging.INFO)
-
+from src.logger import log
 
 app = FastAPI()
 
 
 @app.post("/summaries/", response_model=schema.Item)
 def add_summary2history(summary: schema.Item, db: Session = Depends(get_db)):
-    logging.info(f"Received summary: {summary}")
+    log.info(f"Received summary: {summary}")
     # TODO: Create separate schema for checking in db for same title and video_url- handle specific scenarios: as user may want to generate summary again
     # if_exists = operations.get_summary_by_title(db, )
 
@@ -60,7 +56,7 @@ def check_if_summary_exists(vid_id: str, db: Session = Depends(get_db)):
 
 
 @app.put("/summaries/{summ_id}", response_model=schema.UpdateItem)
-def update_summary(summ_id: int, summary: schema.UpdateItem, db: Session = Depends(get_db)):
+def update_summary(summ_id: int, summary: schema.Item, db: Session = Depends(get_db)):
     summary = crud_operations.update_existing_summary(db, summ_id, summary)
     return summary
 
