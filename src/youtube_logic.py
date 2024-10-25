@@ -41,7 +41,6 @@ class YoutubeApi:
             log.info("Title:", info['title'])
             return info['title']
 
-
     def url_to_id(self):
         try:
             # parsing for url-s with session identifier

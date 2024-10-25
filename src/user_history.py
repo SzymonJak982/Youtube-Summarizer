@@ -11,12 +11,14 @@ class History:
     def __init__(self):
         self.config = Config.API_URL
         self.summary_data = None
+        self.update_string = False
 
 
     def check_if_exists(self, video_id):
         url = f"{self.config}/check/{video_id}"
         response = requests.get(url)
         if response.status_code == 200:
+            self.update_string = True
             return response.text
         else:
             log.info("No summary found for given video_id. New will be created.")
@@ -29,6 +31,9 @@ class History:
 
         local_time = time.localtime()
         formatted_time = time.strftime("%d-%m-%Y %H:%M:%S", local_time)
+        # Now used only for information. In the future, cache_resource may be implemented instead of general update
+        if self.update_string:
+            formatted_time += "(updated)"
 
         v = YoutubeApi(video_url)
         video_id_parsed = v.url_to_id()

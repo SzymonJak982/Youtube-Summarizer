@@ -3,12 +3,13 @@ from user_history import History
 from logger import log
 import json
 import os
+from config import Config
 
 
 class StreamlitUtils:
     """Class to handle different Streamlit functionalities outside of main app.py file"""
     def __init__(self):
-        pass
+        self.tmp_config = Config.TMP_PATH
 
     @staticmethod
     def spacer(space_width: int):
@@ -74,18 +75,15 @@ class StreamlitUtils:
         # st.write(st.session_state["test"])
         pass
 
-    @staticmethod
-    def save_quiz_questions(generated_quiz):
+
+    def save_quiz_questions(self, generated_quiz):
 
         # TODO: add tmp/json file to publically available config file
-        directory = "tmp/json"
+        directory = self.tmp_config
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        # data = json.loads(generated_quiz)
-
         with open(f"{directory}/test_quiz.json", "w") as json_file:
-            # json.dump(data, json_file, indent=4)
             json_file.write(generated_quiz)
 
 
@@ -97,13 +95,34 @@ class Quiz:
     # TODO: handle scenario when GPT is unavaialble and no transcript was generated
     # TODO: Handle additional potential retry logic if needed
     def __init__(self):
-        pass
+        self.tmp_config = Config.TMP_PATH
 
     @staticmethod
-    def open_json():
+    def question_creator(options, option_select, qna_query, summarization):
+        """
+        :param options: ["Open-ended exploratory questions", "Quiz-type questions", "Both, bring it on!"]
+        :param qna_query: Qerying the LLM for quiz about summarized text
+        """
+        qna = None
+        quiz_qna = None
+
+        if option_select == options[0] or option_select is True:
+            qna = qna_query.quiz_generator(summarization)
+            # quiz_qna = None
+        elif option_select == options[1]:
+            # qna = None
+            quiz_qna = qna_query.quiz_generator(summarization, is_scq_quiz=True)
+        elif option_select == options[2]:
+            qna = qna_query.quiz_generator(summarization)
+            quiz_qna = qna_query.quiz_generator(summarization, is_scq_quiz=True)
+
+        return qna, quiz_qna
+
+
+    def open_json(self):
         """Placeholder for a return. """
         # TODO: Change JSON schema and change quiz algo to handle int as keys with values as lists
-        with open("tmp/json/test_quiz.json", "r", encoding='utf8') as f:
+        with open(f"{self.tmp_config}/test_quiz.json", "r", encoding='utf8') as f:
             quiz_data = json.load(f)
         return quiz_data["1"]
 
@@ -121,7 +140,8 @@ class Quiz:
             st.session_state.setdefault(key, value)
 
         # Loading saved quiz
-        quiz_data = Quiz.open_json()
+        q = Quiz()
+        quiz_data = q.open_json()
 
         # questions = []
         # correct = []

@@ -43,26 +43,28 @@ with tab1:
             type="password",
             placeholder="Example: sk-XXX"
 
-            )
+        )
         #TODO: Optimise this dummy function
         def all_submitted():
             st.session_state.message = "All submitted"
 
+        # Here, transform this into session state
         quiz_generation = False
 
         utils.spacer(1)
         st.subheader("Quiz me! 🤔")
 
-        on = st.toggle("Test your knowledge!")#, on_change=utils.quiz_mode_init())
-        if on:
+        # on = st.toggle("Test your knowledge!")#, on_change=utils.quiz_mode_init())
+        # if on:
+        #     quiz_generation = True
+            # st.session_state.quiz_options_visibility = not st.session_state.quiz_options_visibility
+
+
+        options = ["Open-ended exploratory questions", "Quiz-type questions", "Both, bring it on!"]
+        option_select = st.selectbox("Select type of questions", options, index=None, placeholder="None (default)")
+
+        if option_select:
             quiz_generation = True
-
-        option = st.selectbox("Select type of questions",
-                     ("Open-ended exploratory questions", "Quiz-type questions", "Both, bring it on!"),
-                     index=None)
-
-
-
 
         submit_button = st.form_submit_button(
             label='Submit',
@@ -98,21 +100,13 @@ with tab1:
                 history.local_history(summarization, video_title, youtube_url)
 
                 if summarization:
+                    # Generating quiz based on summary
+                    q = Quiz()
+                    quiz = q.question_creator(options, option_select, summarizer, summarization)
+                    (qna, quiz_qna) = quiz
 
-                    if option == 'Open-ended exploratory questions' or option is None:
-                        qna = summarizer.quiz_generator(summarization)
-                        quiz_qna = None
-
-                    elif option == 'Quiz-type questions':
-                        qna = None
-                        quiz_qna = summarizer.quiz_generator(summarization, is_scq_quiz=True)
-
-                    elif option == "Both, bring it on!":
-                        qna = summarizer.quiz_generator(summarization)
-                        quiz_qna = summarizer.quiz_generator(summarization, is_scq_quiz=True)
-
-
-                    if quiz_qna is not None:
+                    if quiz_qna:
+                        # saving QUIZ as JSON to tmp/ path
                         utils.save_quiz_questions(quiz_qna)
 
                     st.markdown(summarization)
@@ -122,7 +116,12 @@ with tab1:
 
                         # If exploratory questions were chosen, they are displayed at the bottom of the summary
                         utils.spacer(1)
-                        utils.quiz_display(qna) if qna is not None else st.write("For quiz, head on to 'Your quiz' tab")
+
+                        if qna:
+                            utils.quiz_display(qna)
+                        else:
+                            # check later
+                            st.info("For quiz, head on to 'Your quiz' tab")
 
                         # TODO: If 'both' or quiz type was chosen, inform the user that he can find his quiz in another tab
                     # st.balloons()
