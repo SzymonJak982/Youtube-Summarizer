@@ -4,7 +4,7 @@ from query_logic import Summarizer
 from user_history import History
 from app_utils import StreamlitUtils, Quiz
 
-# st.title('Youtube Summarizer')
+st.title('Youtube Summarizer')
 
 st.write("""This is an experimental project of YouTube summarizer, creating notes from youtube videos.""")
 

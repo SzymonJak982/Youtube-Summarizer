@@ -15,3 +15,4 @@ sqlalchemy
 fastapi
 pydantic
 #uvicorn
+yt-dlp

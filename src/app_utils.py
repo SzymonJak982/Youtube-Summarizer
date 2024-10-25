@@ -28,7 +28,7 @@ class StreamlitUtils:
             for record in reversed(history_as_list):
                 with st.expander(record["video_title"]):
                     st.write(record["timestamp"])
-                    st.write(record["video_id"])
+                    # st.write(record["video_id"])
                     st.video(record["video_url"])
                     st.markdown(record["summary"])
 
@@ -164,7 +164,7 @@ class Quiz:
             st.session_state.selected_option = None
             st.session_state.answer_submitted = False
 
-        st.title("Streamlit Quiz App")
+        st.title("Quiz")
 
         # Progress bar
         progress_bar_value = (st.session_state.current_index + 1) / len(quiz_data)

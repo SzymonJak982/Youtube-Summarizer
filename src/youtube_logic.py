@@ -1,8 +1,8 @@
-import pytube
 from pytube import YouTube
 from youtube_transcript_api import YouTubeTranscriptApi
 import re
 import time
+from yt_dlp import YoutubeDL
 from logger import log
 
 
@@ -11,27 +11,36 @@ class YoutubeApi:
         self.video_url = video_url
         self.video_id = None
         self.warning = None
+    # buggy library, switching to yt-dlp
+    # @staticmethod
+    # def get_youtube_title(url):
+    #     max_retries = 3
+    #     counter = 0
+    #
+    #     while True:
+    #         try:
+    #             youtube = YouTube(url)
+    #             if youtube.title is None:
+    #                 raise Exception
+    #             else:
+    #                 return youtube.title
+    #
+    #         except:
+    #             counter += 1
+    #             log.info(f"Unable to connect to Youtube API. Retrying {counter}/{max_retries}")
+    #             time.sleep(2)
+    #
+    #             if counter == max_retries:
+    #                 return False
 
+    # WORKAROUND: Much slower than pytube. DO NOT PUT URL TO PLAYLIST- takes very long to finish
     @staticmethod
     def get_youtube_title(url):
-        max_retries = 3
-        counter = 0
+        with YoutubeDL() as ydl:
+            info = ydl.extract_info(url, download=False)
+            log.info("Title:", info['title'])
+            return info['title']
 
-        while True:
-            try:
-                youtube = YouTube(url)
-                if youtube.title is None:
-                    raise Exception
-                else:
-                    return youtube.title
-
-            except:
-                counter += 1
-                log.info(f"Unable to connect to Youtube API. Retrying {counter}/{max_retries}")
-                time.sleep(1)
-
-                if counter > max_retries:
-                    return False
 
     def url_to_id(self):
         try:
@@ -93,7 +102,7 @@ class YoutubeApi:
         try:
             start_time = time.time()
 
-            yt = pytube.YouTube(video_url)
+            yt = YouTube(video_url)
             audio_stream = yt.streams.filter(only_audio=True).first()
             audio_stream.download(filename=output_path)
 
