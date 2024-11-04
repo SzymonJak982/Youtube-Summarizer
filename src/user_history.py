@@ -32,8 +32,9 @@ class History:
         local_time = time.localtime()
         formatted_time = time.strftime("%d-%m-%Y %H:%M:%S", local_time)
         # Now used only for information. In the future, cache_resource may be implemented instead of general update
-        if self.update_string:
-            formatted_time += "(updated)"
+        # TODO: Add DateTime in table, without inputing raw time from here for easier querying later
+        # if self.update_string:
+        #     formatted_time += "(updated)"
 
         v = YoutubeApi(video_url)
         video_id_parsed = v.url_to_id()

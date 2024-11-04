@@ -4,12 +4,28 @@ from logger import log
 import json
 import os
 from config import Config
+from style_customization import UICustomization
+
+
+
 
 
 class StreamlitUtils:
     """Class to handle different Streamlit functionalities outside of main app.py file"""
     def __init__(self):
         self.tmp_config = Config.TMP_PATH
+
+    @staticmethod
+    def st_sessionstate_init():
+        """Initialize st.session state variables"""
+        # # for many variables:
+        # default_values = {"quiz_qna": False}
+        # for key, value in default_values.items():
+        #     st.session_state.setdefault(key, value)
+        if "quiz_qna" not in st.session_state:
+            st.session_state.quiz_qna = False
+        if "video_url"not in st.session_state:
+            st.session_state.video_url = False
 
     @staticmethod
     def spacer(space_width: int):
@@ -50,35 +66,8 @@ class StreamlitUtils:
             with st.expander(record['question']):
                 st.write(record['answer'])
 
-        # TODO: introduced bug with None here ?
-
-
-    @staticmethod
-    def quiz_mode_init():
-        # if 'quiz_init' not in st.session_state:
-        #     st.session_state.quiz_init = False
-
-        # callback to update 'init' based on 'check'
-        # def flip():
-        #     if st.session_state["check"]:
-        #         st.session_state["init"] = True
-        #     else:
-        #         st.session_state["init"] = False
-        #
-        # if "init" not in st.session_state:
-        #     st.session_state["init"] = True
-        #
-        # st.toggle(
-        #     "Flip the switch, bitch", value=st.session_state["init"], key="check", on_change=flip
-        # )
-        #
-        # st.write(st.session_state["test"])
-        pass
-
-
     def save_quiz_questions(self, generated_quiz):
 
-        # TODO: add tmp/json file to publically available config file
         directory = self.tmp_config
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -106,12 +95,20 @@ class Quiz:
         qna = None
         quiz_qna = None
 
+        # if "quiz_qna" not in st.session_state:
+        #     # False by default
+        #     st.session_state.quiz_qna = False
+
         if option_select == options[0] or option_select is True:
             qna = qna_query.quiz_generator(summarization)
             # quiz_qna = None
         elif option_select == options[1]:
             # qna = None
             quiz_qna = qna_query.quiz_generator(summarization, is_scq_quiz=True)
+            # if "quiz_qna" not in st.session_state:
+                # TODO: Disable that after quiz is finished
+            st.session_state.quiz_qna = quiz_qna
+
         elif option_select == options[2]:
             qna = qna_query.quiz_generator(summarization)
             quiz_qna = qna_query.quiz_generator(summarization, is_scq_quiz=True)
@@ -126,14 +123,14 @@ class Quiz:
             quiz_data = json.load(f)
         return quiz_data["1"]
 
-
-
     @staticmethod
     def render_quiz():
         """All of the logic for rendering interactive quiz
         Original streamlit-quiz idea by banderpt: https://github.com/benderpt/streamlit_quizz_template/blob/main/main.py"""
+        # style customization
+        UICustomization.change_button_style()
 
-        # initialising session state variables
+        # initializing session state variables
         default_values = {'current_index': 0, 'current_question': 0, 'score': 0, 'selected_option': None,
                           'answer_submitted': False}
         for key, value in default_values.items():
@@ -141,18 +138,12 @@ class Quiz:
 
         # Loading saved quiz
         q = Quiz()
-        quiz_data = q.open_json()
 
-        # questions = []
-        # correct = []
-        # explanations = []
-        # options = []
-        #
-        # for entry_id, entry in quiz_data.items():
-        #     questions.append(entry["scq"])
-        #     correct.append(entry['correct'])
-        #     explanations.append(entry['explanation'])
-        #     options.append(entry['options'])
+        quiz_data = q.open_json()
+        if "quiz_data" not in st.session_state:
+            st.session_state.quiz_data = quiz_data
+
+        data = st.session_state.quiz_data
 
         def restart_quiz():
             st.session_state.current_index = 0
@@ -161,18 +152,11 @@ class Quiz:
             st.session_state.answer_submitted = False
 
         def submit_answer():
-
-            # Check if an option has been selected- change from default None state
-            if st.session_state.selected_option is not None:
-                # Mark the answer as submitted
+            if st.session_state.selected_option:
                 st.session_state.answer_submitted = True
 
-                # correct_answers = []
-                # for entry_id, entry in quiz_data.items():
-                #     correct_answers.append(entry['correct'])
-
                 # Check if the selected option is correct
-                if st.session_state.selected_option == quiz_data[st.session_state.current_index]['answer']:
+                if st.session_state.selected_option == st.session_state.quiz_data[st.session_state.current_index]['answer']:
                     st.session_state.score += 1
 
             else:
@@ -184,15 +168,18 @@ class Quiz:
             st.session_state.selected_option = None
             st.session_state.answer_submitted = False
 
+        def close_quiz():
+            st.session_state.quiz_qna = False
+
         st.title("Quiz")
 
         # Progress bar
-        progress_bar_value = (st.session_state.current_index + 1) / len(quiz_data)
-        st.metric(label="Score", value=f"{st.session_state.score} / {len(quiz_data)}")
+        progress_bar_value = (st.session_state.current_index + 1) / len(st.session_state.quiz_data)
+        st.metric(label="Score", value=f"{st.session_state.score} / {len(st.session_state.quiz_data)}")
         st.progress(progress_bar_value)
 
         # Display the question and answer options
-        question_item = quiz_data[st.session_state.current_index]
+        question_item = st.session_state.quiz_data[st.session_state.current_index]
         st.subheader(f"Question {st.session_state.current_index + 1}")
         st.subheader(question_item["question"])
         # st.write(question_item['information'])
@@ -202,6 +189,7 @@ class Quiz:
         options = question_item['options']
         correct_answer = question_item['answer']
 
+        # Checking if correct
         if st.session_state.answer_submitted:
             for i, option in enumerate(options):
                 label = option
@@ -211,6 +199,8 @@ class Quiz:
                     st.error(f"{label} (Incorrect)")
                 else:
                     st.write(label)
+
+        # Listing the options
         else:
             for i, option in enumerate(options):
                 if st.button(option, key=i, use_container_width=True):
@@ -220,76 +210,16 @@ class Quiz:
 
         # Submission button and response logic
         if st.session_state.answer_submitted:
-            if st.session_state.current_index < len(quiz_data) - 1:
+            if st.session_state.current_index < len(st.session_state.quiz_data) - 1:
                 st.button('Next', on_click=next_question)
             else:
-                st.write(f"Quiz completed! Your score is: {st.session_state.score} / {len(quiz_data) * 10}")
+                st.write(f"Quiz completed! Your score is: {st.session_state.score} / {len(data)}")
                 if st.button('Restart', on_click=restart_quiz):
                     pass
         else:
-            if st.session_state.current_index < len(quiz_data):
+            if st.session_state.current_index < len(st.session_state.quiz_data):
                 st.button('Submit', on_click=submit_answer)
-
-
-        # # Answer selection
-        # answer_options = []
-        # answer_option_ids = []
-        #
-        # for ans_option, ans_opt_id in options[0].items():
-        #     answer_options.append(ans_option)
-        #     answer_option_ids.append(ans_opt_id)
-
-        # option_item = options[st.session_state.current_index]
-        # correct_answer = correct[st.session_state.current_index]
-        # explanation_item = explanations[st.session_state.current_index]
-        # # TODO- finish this algo, checking if answer chosen by user through radio is == correct. Check through dict.
-        #
-        # user_choice = st.radio(question_item, list(option_item.values()), index=None, on_change=submit_answer())
-        # if user_choice is not None:
-        #     st.session_state.selected_option = user_choice
-        #
-        # if st.session_state.answer_submitted:
-        #     selected_key = [key for key, value in option_item.items() if value == user_choice]
-        #     if selected_key == correct_answer:
-        #         st.success(f"Correct answer!{explanation_item}")
-        #
-        #     elif selected_key != correct_answer and selected_key is not None:
-        #         st.error(f"Incorrect 😔{explanation_item}")
-        #
-        #     else:
-        #         st.write(explanation_item)
-        #
-
-        # if user_choice
-
-
-        # if st.session_state.answer_submitted:
-        #     for i, option in enumerate(answer_options):
-        #         label = option
-        #         if option == correct_answer:
-        #             st.success(f"{label} (Correct answer)")
-        #         elif option == st.session_state.selected_option:
-        #             st.error(f"{label} (Incorrect answer)")
-        #         else:
-        #             st.write(label)
-        # else:
-        #     for i, option in enumerate(options):
-        #         if st.button(option, key=i, use_container_width=True):
-        #             st.session_state.selected_option = option
-        #
-        # st.markdown(""" ___""")
-        #
-        # # Submission button and response logic
-        # if st.session_state.answer_submitted:
-        #     if st.session_state.current_index < len(quiz_data) - 1:
-        #         st.button('Next', on_click=next_question)
-        #     else:
-        #         st.write(f"Quiz completed! Your score is: {st.session_state.score} / {len(quiz_data)}")
-        #         if st.button('Restart', on_click=restart_quiz):
-        #             pass
-        # else:
-        #     if st.session_state.current_index < len(quiz_data):
-        #         st.button('Submit', on_click=submit_answer)
+                st.button('Quit', on_click= close_quiz)
 
 
 
