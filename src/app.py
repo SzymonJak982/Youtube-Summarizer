@@ -7,31 +7,28 @@ from logger import log
 
 
 @st.cache_data
-def summarization_wrapper(output):
-    return output
+def transcript_cache():
+    # youtube = YoutubeApi(input_url)
+    cached_text = youtube.fetch_transcript()
+    return cached_text
+
 
 @st.cache_data
-def transcript_generation_wrapper(output):
-    return output
+def summarization_cache(input_text):
+    cached_summary = summarizer.paragraph_summarize_query(input_text)
+    return cached_summary
 
 
-# st.title('Youtube Summarizer')
+st.title('Youtube Summarizer')
 
 st.write("""This is an experimental project of YouTube summarizer, creating notes from youtube videos.""")
 
 disclaimer = st.info("Note: In this version, summarization is available almost exclusively for english-language videos")
 
-# @st.cache_data
-# def summarization_wrapper(output):
-#     # TODO: Figure out what to do with it or delete it.
-#     """Small util wrapper for caching summary- does not work"""
-#     return output
-
-
 
 tab1, tab2, tab3 = st.tabs(["Summarizer", "Your summaries", "Your quiz"])
 
-# Tabs in the reversed order because Streamlit reruns this script on every change
+# Tabs in the reversed order because Streamlit reruns this script on every change (click)
 # For correct history generation and dynamic quiz interaction
 
 utils = StreamlitUtils()
@@ -40,18 +37,19 @@ utils.st_sessionstate_init()
 log.info('Active quiz' if st.session_state.quiz_qna else 'Inactive quiz')
 
 
-
 with tab3:
+    # If quiz is active, it persists and generates another question without resetting
     if st.session_state.quiz_qna:
         Quiz.render_quiz()
 
 with tab1:
     if st.session_state.quiz_qna:
-        #TODO: Data is not saved in the function itself. Figure out how to access this data.
-        cached_transcript = transcript_generation_wrapper(st.session_state.video_url)
 
-        # cache_t
-        s = summarization_wrapper(cached_transcript)
+
+        cached_transcript = transcript_cache() #(st.session_state.video_url)
+
+        s = summarization_cache(cached_transcript)
+        st.video(st.session_state.video_url)
         st.markdown(s)
 
 with tab2:
@@ -81,6 +79,9 @@ with tab1:
         #TODO: Optimise this dummy function
         def all_submitted():
             st.session_state.message = "All submitted"
+            # resetting from previous quiz
+            # if st.session_state.quiz_qna:
+            #     st.session_state.quiz_qna = False
 
         # Here, transform this into session state
         quiz_generation = False
@@ -96,24 +97,28 @@ with tab1:
 
         submit_button = st.form_submit_button(
             label='Submit',
-            on_click=all_submitted(),
+            on_click=all_submitted,
             use_container_width=True,
             type="primary",
         )
 
     if youtube_url and openai_api_key and submit_button:
 
+        # clearing cached transcript and summary on new generation
+        st.cache_data.clear()
+
         utils.spacer(2)
 
         with st.spinner("Loading...📝"):
-            # TODO: Optional: This process can be optimised in the by running in a single classes (clearer code)
+            # TODO: Optional: This process can be optimised
 
+            # transcript_generation_wrapper(youtube_url)
             youtube = YoutubeApi(youtube_url)
-            transcript = youtube.fetch_transcript()
+            # transcript = youtube.fetch_transcript()
+            transcript = transcript_cache()
 
             if transcript:
                 # caching transcript for session in streamlit
-                cache_t = transcript_generation_wrapper(transcript)
 
                 st.session_state.video_url = youtube_url
                 video_title = youtube.get_youtube_title(youtube_url)
@@ -121,12 +126,14 @@ with tab1:
                 st.video(youtube_url)
 
                 summarizer = Summarizer(openai_api_key)
-                s = summarizer.paragraph_summarize_query(transcript)
 
-                # caching a summary for session in streamlit
-                summarization = summarization_wrapper(s)
+                # s = summarizer.paragraph_summarize_query(transcript)
+                #
+                # # caching a summary for session in streamlit
                 # summarization = summarization_wrapper(s)
-                print(summarization)
+                # # summarization = summarization_wrapper(s)
+                # print(summarization)
+                summarization = summarization_cache(transcript)
 
                 # Saving a summary to history
                 history = History()
@@ -166,7 +173,7 @@ with tab1:
         st.stop()
 
 
-# Tab is rerun to generate new quiz after choosing "QUIT" option.
+# Tab is rerun to generate new quiz after choosing "QUIT" option on previous summary call.
 with tab3:
     if st.session_state.quiz_qna:
         # pass

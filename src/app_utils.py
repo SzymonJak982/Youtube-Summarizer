@@ -127,21 +127,41 @@ class Quiz:
     def render_quiz():
         """All of the logic for rendering interactive quiz
         Original streamlit-quiz idea by banderpt: https://github.com/benderpt/streamlit_quizz_template/blob/main/main.py"""
+
         # style customization
         UICustomization.change_button_style()
 
-        # initializing session state variables
+
         default_values = {'current_index': 0, 'current_question': 0, 'score': 0, 'selected_option': None,
                           'answer_submitted': False}
-        for key, value in default_values.items():
-            st.session_state.setdefault(key, value)
+
+
+        def _default_sessionstate(end=False):
+            """ Initializing session state variables
+            :param end: variables cleanup after quiting the quiz
+            """
+            for key, value in default_values.items():
+
+                if end:
+                    st.session_state[key] = value
+
+                # only when session state is lost
+                elif key not in st.session_state:
+                    st.session_state.setdefault(key, value)
+
+                else:
+                    break
+
+        _default_sessionstate()
 
         # Loading saved quiz
         q = Quiz()
 
         quiz_data = q.open_json()
         if "quiz_data" not in st.session_state:
-            st.session_state.quiz_data = quiz_data
+            st.session_state.quiz_data = None
+
+        st.session_state.quiz_data = quiz_data
 
         data = st.session_state.quiz_data
 
@@ -169,22 +189,23 @@ class Quiz:
             st.session_state.answer_submitted = False
 
         def close_quiz():
+            # setting all sessionstate variables associated to default
             st.session_state.quiz_qna = False
+            st.session_state.quiz_data = None
+            _default_sessionstate(end=True)
 
         st.title("Quiz")
 
         # Progress bar
-        progress_bar_value = (st.session_state.current_index + 1) / len(st.session_state.quiz_data)
-        st.metric(label="Score", value=f"{st.session_state.score} / {len(st.session_state.quiz_data)}")
+        progress_bar_value = (st.session_state.current_index + 1) / len(data)
+        st.metric(label="Score", value=f"{st.session_state.score} / {len(data)}")
         st.progress(progress_bar_value)
 
         # Display the question and answer options
-        question_item = st.session_state.quiz_data[st.session_state.current_index]
+        question_item = data[st.session_state.current_index]
         st.subheader(f"Question {st.session_state.current_index + 1}")
         st.subheader(question_item["question"])
         # st.write(question_item['information'])
-
-        st.markdown(""" ___""")
 
         options = question_item['options']
         correct_answer = question_item['answer']
@@ -202,24 +223,25 @@ class Quiz:
 
         # Listing the options
         else:
-            for i, option in enumerate(options):
-                if st.button(option, key=i, use_container_width=True):
-                    st.session_state.selected_option = option
+            # for i, option in enumerate(options):
+            #     if st.button(option, key=i, use_container_width=True):
+            #         st.session_state.selected_option = option
+            st.session_state.selected_option = st.radio("Choose an option:", options)
 
-        st.markdown(""" ___""")
 
         # Submission button and response logic
         if st.session_state.answer_submitted:
-            if st.session_state.current_index < len(st.session_state.quiz_data) - 1:
+            if st.session_state.current_index < len(data) - 1:
                 st.button('Next', on_click=next_question)
             else:
                 st.write(f"Quiz completed! Your score is: {st.session_state.score} / {len(data)}")
-                if st.button('Restart', on_click=restart_quiz):
-                    pass
+                st.button('Restart', on_click=restart_quiz)
+                st.button('Quit', on_click=close_quiz)
+
         else:
-            if st.session_state.current_index < len(st.session_state.quiz_data):
+            if st.session_state.current_index < len(data):
                 st.button('Submit', on_click=submit_answer)
-                st.button('Quit', on_click= close_quiz)
+                st.button('Quit', on_click=close_quiz)
 
 
 
